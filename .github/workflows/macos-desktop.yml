@@ -1,0 +1,28 @@
+name: macOS desktop pet
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test-and-build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check renderer
+        run: node --check desktop/pet.js && node --test desktop/test.mjs
+      - name: Check packaging script
+        run: bash -n desktop/build.sh
+      - name: Compile and sign local prototype
+        run: bash desktop/build.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: xiexie-pet-macos-${{ runner.arch }}
+          path: build/蟹蟹桌宠.zip
+          retention-days: 7
